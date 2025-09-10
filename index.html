@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/fav.png">
+    <title>AspireJEE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#818cf8',
+                        dark: '#1f2937',
+                        light: '#f9fafb',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            min-height: 100vh;
+            color: #f9fafb;
+        }
+        
+        .card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chapter-item, .resource-item, .milestone-item {
+            transition: all 0.3s ease;
+        }
+        
+        .chapter-item:hover, .resource-item:hover, .milestone-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .progress-ring {
+            transition: stroke-dashoffset 0.5s;
+        }
+        
+        .floating-btn {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .subject-physics {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .subject-chemistry {
+            border-left: 4px solid #10b981;
+        }
+        
+        .subject-maths {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .custom-checkbox:checked + .checkmark {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+        
+        .custom-checkbox:checked + .checkmark:after {
+            display: block;
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .calendar-day {
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        .calendar-day.today {
+            background: #6366f1;
+            color: white;
+        }
+        .calendar-day.event-mains {
+            background: #ef4444;
+            color: white;
+            font-weight: bold;
+        }
+        .calendar-day.event-advanced {
+            background: #10b981;
+            color: white;
+            font-weight: bold;
+        }
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+        .schedule-block {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+        .todo-item.completed {
+            background: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12">
+            <h1 class="text-4xl font-bold text-center mb-6 md:mb-0 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                AspireJEE
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm bg-dark/70 py-2 px-4 rounded-lg">
+                    <i class="fas fa-user-circle mr-2 text-secondary"></i>
+                    <span>Hey Champ!</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- JEE Countdown Timer -->
+        <section class="card p-6 mb-8 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 z-0"></div>
+            <div class="relative z-10">
+                <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-hourglass-half mr-3 text-secondary"></i>
+                    Countdown to JEE Mains 2026
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div id="days" class="text-4xl font-bold text-primary">00</div>
+                        <div class="text-sm mt-2">Days</div>
+                    </div>
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div id="hours" class="text-4xl font-bold text-secondary">00</div>
+                        <div class="text-sm mt-2">Hours</div>
+                    </div>
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div id="minutes" class="text-4xl font-bold text-primary">00</div>
+                        <div class="text-sm mt-2">Minutes</div>
+                    </div>
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div id="seconds" class="text-4xl font-bold text-secondary">00</div>
+                        <div class="text-sm mt-2">Seconds</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Pomodoro Timer -->
+            <section class="card p-6 lg:col-span-1">
+                <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-clock mr-3 text-secondary"></i>
+                    Study Timer
+                </h2>
+                <div class="text-center mb-6">
+                    <div class="relative mx-auto w-48 h-48 mb-6">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-dark/30" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                            <circle class="progress-ring text-secondary" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <div id="timer-display" class="text-4xl font-bold">25:00</div>
+                            <div id="timer-status" class="text-sm">Ready to focus</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center space-x-4 mb-6">
+                        <button data-minutes="60" class="pomodoro-btn bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-lg transition">
+                            60 min
+                        </button>
+                        <button data-minutes="120" class="pomodoro-btn bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-lg transition">
+                            120 min
+                        </button>
+                        <button data-minutes="180" class="pomodoro-btn bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-lg transition">
+                            180 min
+                        </button>
+                    </div>
+                    <div class="flex justify-center space-x-4">
+                        <button id="start-timer" class="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg transition">
+                            <i class="fas fa-play mr-2"></i>Start
+                        </button>
+                        <button id="pause-timer" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-6 rounded-lg transition">
+                            <i class="fas fa-pause mr-2"></i>Pause
+                        </button>
+                        <button id="reset-timer" class="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-lg transition">
+                            <i class="fas fa-redo mr-2"></i>Reset
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Weekly Tests -->
+            <section class="card p-6 lg:col-span-2">
+                <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-tasks mr-3 text-secondary"></i>
+                    Weekly JEE Mains Tests
+                </h2>
+                <p class="text-sm mb-6 text-gray-300">Complete 3 tests each week to track your progress</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">Test 1</h3>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="test1" class="test-checkbox hidden">
+                                <label for="test1" class="w-6 h-6 rounded border-2 border-secondary flex items-center justify-center cursor-pointer transition">
+                                    <i class="fas fa-check text-white hidden"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">Full Syllabus</div>
+                        <div class="mt-2 text-xs">
+                            <span class="bg-primary/20 text-primary py-1 px-2 rounded">90 questions</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">Test 2</h3>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="test2" class="test-checkbox hidden">
+                                <label for="test2" class="w-6 h-6 rounded border-2 border-secondary flex items-center justify-center cursor-pointer transition">
+                                    <i class="fas fa-check text-white hidden"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">Physics & Chemistry</div>
+                        <div class="mt-2 text-xs">
+                            <span class="bg-primary/20 text-primary py-1 px-2 rounded">60 questions</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark/50 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-medium">Test 3</h3>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="test3" class="test-checkbox hidden">
+                                <label for="test3" class="w-6 h-6 rounded border-2 border-secondary flex items-center justify-center cursor-pointer transition">
+                                    <i class="fas fa-check text-white hidden"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">Maths & Physics</div>
+                        <div class="mt-2 text-xs">
+                            <span class="bg-primary/20 text-primary py-1 px-2 rounded">60 questions</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center bg-dark/30 p-4 rounded-lg">
+                    <div class="flex-1">
+                        <h3 class="font-medium mb-1">Weekly Progress</h3>
+                        <div class="w-full bg-dark rounded-full h-2.5">
+                            <div id="weekly-progress" class="bg-secondary h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="ml-4 text-2xl font-bold">
+                        <span id="tests-completed">0</span>/3
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Syllabus Progress -->
+        <section class="card p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                <i class="fas fa-book-open mr-3 text-secondary"></i>
+                JEE Syllabus - Chapter Tracking
+            </h2>
+            
+            <!-- Progress Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-dark/30 p-4 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-primary" id="pending-count">0</div>
+                    <div class="text-sm mt-2">Pending Chapters</div>
+                </div>
+                
+                <div class="bg-dark/30 p-4 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-secondary" id="moderate-count">0</div>
+                    <div class="text-sm mt-2">Moderate Progress</div>
+                </div>
+                
+                <div class="bg-dark/30 p-4 rounded-lg text-center">
+                    <div class="text-4xl font-bold text-green-500" id="completed-count">0</div>
+                    <div class="text-sm mt-2">Fully Completed</div>
+                </div>
+            </div>
+            
+            <!-- Subject Tabs -->
+            <div class="mb-6">
+                <div class="flex flex-wrap border-b border-gray-700">
+                    <button class="tab-btn py-2 px-4 font-medium text-primary border-b-2 border-primary" data-subject="all">
+                        All
+                    </button>
+                    <button class="tab-btn py-2 px-4 font-medium text-gray-400" data-subject="physics">
+                        Physics
+                    </button>
+                    <button class="tab-btn py-2 px-4 font-medium text-gray-400" data-subject="chemistry">
+                        Chemistry
+                    </button>
+                    <button class="tab-btn py-2 px-4 font-medium text-gray-400" data-subject="maths">
+                        Mathematics
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chapters List -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-dark/30 p-4 rounded-lg">
+                    <h3 class="font-medium mb-4 text-center">Pending Chapters</h3>
+                    <div id="pending-chapters" class="space-y-3 max-h-96 overflow-y-auto p-2">
+                        <!-- Chapters will be added here dynamically -->
+                    </div>
+                </div>
+                
+                <div class="bg-dark/30 p-4 rounded-lg">
+                    <h3 class="font-medium mb-4 text-center">Moderate Completion</h3>
+                    <div id="moderate-chapters" class="space-y-3 max-h-96 overflow-y-auto p-2">
+                        <!-- Chapters will be added here dynamically -->
+                    </div>
+                </div>
+                
+                <div class="bg-dark/30 p-4 rounded-lg">
+                    <h3 class="font-medium mb-4 text-center">Fully Completed</h3>
+                    <div id="completed-chapters" class="space-y-3 max-h-96 overflow-y-auto p-2">
+                        <!-- Chapters will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Visualization -->
+            <div class="bg-dark/30 p-4 rounded-lg">
+                <h3 class="font-medium mb-4 text-center">Overall Progress</h3>
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="w-48 h-48 relative mx-auto md:mx-0 mb-6 md:mb-0">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <path d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#4a5568"
+                                stroke-width="3" />
+                            <path class="progress-ring" 
+                                d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#6366f1"
+                                stroke-width="3"
+                                stroke-dasharray="0, 100" />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="progress-percent" class="text-lg font-bold">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 max-w-md">
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Physics</span>
+                                <span id="physics-progress" class="text-sm font-medium">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                                <div class="bg-red-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Chemistry</span>
+                                <span id="chemistry-progress" class="text-sm font-medium">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                                <div class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium">Mathematics</span>
+                                <span id="maths-progress" class="text-sm font-medium">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendar Section -->
+        <section class="card p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                <i class="fas fa-calendar-alt mr-3 text-secondary"></i>
+                JEE 2026 Exam Calendar
+            </h2>
+            <div class="bg-dark/30 p-4 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-month" class="text-primary hover:text-primary/80 transition">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="month-year" class="text-lg font-medium"></h3>
+                    <button id="next-month" class="text-primary hover:text-primary/80 transition">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center text-sm font-medium text-gray-300 mb-2">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                <div id="calendar-days" class="grid grid-cols-7 gap-2 text-center"></div>
+            </div>
+        </section>
+
+        <!-- Study Schedule Planner -->
+        <section class="card p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                <i class="fas fa-calendar-check mr-3 text-secondary"></i>
+                Study Schedule Planner
+            </h2>
+            <div class="bg-dark/30 p-4 rounded-lg">
+                <div class="flex justify-between mb-4">
+                    <h3 class="font-medium">Weekly Study Plan</h3>
+                    <div>
+                        <button id="add-todo" class="bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-lg transition mr-2">Add Task</button>
+                        <button id="suggest-schedule" class="bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-lg transition">Suggest Schedule</button>
+                    </div>
+                </div>
+                <div id="todo-list" class="space-y-2">
+                    <!-- To-do items will be added here -->
+                </div>
+            </div>
+        </section>
+
+        
+     
+
+       
+
+        
+        <!-- Formula Quick Reference -->
+       
+
+       
+        <!-- Important Useful Websites -->
+        <section class="card p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                <i class="fas fa-globe mr-3 text-secondary"></i>
+                Important Useful Websites
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Physics Wallah Card -->
+                <div class="website-card bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover:scale-[1.02] cursor-pointer group" onclick="window.open('https://www.pw.live/study/batches/study', '_blank')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-4">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Physics Wallah</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4">Free online courses, lessons & practice for every student</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-purple-400 group-hover:text-purple-300 transition-colors">Visit Website</span>
+                        <i class="fas fa-arrow-right text-purple-500 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+                
+                <!-- Physics Animations Card -->
+                <div class="website-card bg-gradient-to-br from-green-500/10 to-teal-500/10 p-6 rounded-xl border border-green-500/30 hover:border-green-500/60 transition-all duration-300 hover:scale-[1.02] cursor-pointer group" onclick="window.open('https://ophysics.com/', '_blank')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-green-500 to-teal-500 flex items-center justify-center mr-4">
+                            <i class="fas fa-book text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Physics Animations</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4">Physics Animations All 3D</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-green-400 group-hover:text-green-300 transition-colors">Visit Website</span>
+                        <i class="fas fa-arrow-right text-green-500 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+                
+                <!-- JEE Mock Tests Card -->
+                <div class="website-card bg-gradient-to-br from-green-500/10 to-teal-500/10 p-6 rounded-xl border border-green-500/30 hover:border-green-500/60 transition-all duration-300 hover:scale-[1.02] cursor-pointer group" onclick="window.open('https://www.mockers.in/exam/jee-main-mock-test/', '_blank')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-green-500 to-teal-500 flex items-center justify-center mr-4">
+                            <i class="fas fa-book text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">JEE Mock Tests</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4">JEE Mocks For Free Of All Shifts And Years</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-green-400 group-hover:text-green-300 transition-colors">Visit Website</span>
+                        <i class="fas fa-arrow-right text-green-500 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+                
+                <!-- Maths Graphs 3D Card -->
+                <div class="website-card bg-gradient-to-br from-orange-500/10 to-red-500/10 p-6 rounded-xl border border-orange-500/30 hover:border-orange-500/60 transition-all duration-300 hover:scale-[1.02] cursor-pointer group" onclick="window.open('https://www.geogebra.org/3d?lang=en', '_blank')">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center mr-4">
+                            <i class="fas fa-university text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Maths Graphs 3D</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4">All Graphs In 3D View</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-orange-400 group-hover:text-orange-300 transition-colors">Visit Website</span>
+                        <i class="fas fa-arrow-right text-orange-500 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-dark/80 border-t border-gray-700 mt-12 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                        JEE Preparation Dashboard
+                    </h3>
+                    <p class="text-gray-400 text-sm mt-1">Your complete JEE 2026 preparation companion</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-6 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm">
+                    © 2025 JEE Preparation Dashboard. All rights reserved.
+                </p>
+                <p class="text-gray-400 text-sm mt-2 md:mt-0">
+                    Created with <i class="fas fa-heart text-red-500 mx-1"></i> by Deepanshu
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#6366f1" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#6366f1",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+
+        // JEE Syllabus Data
+        const syllabus = {
+            physics: [
+                "Physics and Measurement", "Kinematics", "Laws of Motion", "Work, Energy, and Power",
+                "Rotational Motion", "Gravitation", "Properties of Solids and Liquids", "Thermodynamics",
+                "Kinetic Theory of Gases", "Oscillations", "Waves", "Electrostatics", "Current Electricity",
+                "Magnetic Effects of Current", "Magnetism", "Electromagnetic Induction", "Alternating Currents",
+                "Electromagnetic Waves", "Optics", "Dual Nature of Matter and Radiation", "Atoms", "Nuclei",
+                "Electronic Devices", "Communication Systems", "Experimental Skills"
+            ],
+            chemistry: [
+                "Some Basic Concepts in Chemistry", "States of Matter: Gases and Liquids", "Atomic Structure",
+                "Chemical Bonding and Molecular Structure", "Chemical Thermodynamics", "Solutions", "Equilibrium",
+                "Redox Reactions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry",
+                "Purification and Characterisation of Organic Compounds", "Some Basic Principles of Organic Chemistry",
+                "Hydrocarbons", "Organic Compounds Containing Halogens", "Alcohols, Phenols, Ethers",
+                "Aldehydes and Ketones", "Carboxylic Acids", "Organic Compounds Containing Nitrogen", "Polymers",
+                "Biomolecules", "Chemistry in Everyday Life", "Principles Related to Practical Chemistry",
+                "Classification of Elements and Periodicity in Properties", "General Principles and Processes of Isolation of Metals",
+                "Hydrogen", "s-Block Elements (Alkali and Alkaline Earth Metals)", "p-Block Elements (Group 13 and 14)",
+                "p-Block Elements (Group 15 to 18)", "d- and f-Block Elements", "Co-ordination Compounds",
+                "Environmental Chemistry"
+            ],
+            maths: [
+                "Sets", "Relations", "Functions", "Complex Numbers", "Quadratic Equations", "Matrices", "Determinants",
+                "Permutations", "Combinations", "Mathematical Induction", "Binomial Theorem", "Arithmetic Progression",
+                "Geometric Progression", "Harmonic Progression", "Limits", "Continuity", "Differentiability",
+                "Differentiation", "Application of Derivatives: Tangents and Normals", "Application of Derivatives: Maxima and Minima",
+                "Indefinite Integrals", "Definite Integrals", "Application of Integrals: Area under Curves", "Differential Equations",
+                "Straight Lines", "Circles", "Parabola", "Ellipse", "Hyperbola", "Three-dimensional Geometry: Direction Cosines and Lines",
+                "Three-dimensional Geometry: Planes", "Three-dimensional Geometry: Distance and Angle", "Vector Algebra: Vectors",
+                "Vector Algebra: Scalar and Vector Products", "Statistics", "Probability", "Trigonometry: Ratios and Identities",
+                "Trigonometry: Equations", "Trigonometry: Inverse Functions", "Mathematical Reasoning"
+            ]
+        };
+
+        // Initialize chapters from Local Storage or syllabus
+        let chapters = [];
+        function loadChapters() {
+            const storedChapters = localStorage.getItem('jeeChapters');
+            if (storedChapters) {
+                chapters = JSON.parse(storedChapters);
+            } else {
+                for (const subject in syllabus) {
+                    syllabus[subject].forEach(chapter => {
+                        chapters.push({
+                            id: `${subject}-${chapter.replace(/\s+/g, '-').toLowerCase()}`,
+                            name: chapter,
+                            subject: subject,
+                            pyq: false,
+                            concept: false,
+                            revision: false,
+                            status: "pending",
+                            lastRevised: null
+                        });
+                    });
+                }
+                saveChapters();
+            }
+        }
+
+        function saveChapters() {
+            localStorage.setItem('jeeChapters', JSON.stringify(chapters));
+        }
+
+        // Initialize to-dos for Study Schedule Planner
+        let todos = [];
+        function loadTodos() {
+            const storedTodos = localStorage.getItem('jeeTodos');
+            if (storedTodos) {
+                todos = JSON.parse(storedTodos);
+            }
+        }
+
+        function saveTodos() {
+            localStorage.setItem('jeeTodos', JSON.stringify(todos));
+        }
+
+        // JEE Countdown Timer
+        function updateCountdown() {
+            const jeeDate = new Date('January 20, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = jeeDate - now;
+
+            if (distance < 0) {
+                document.getElementById('days').innerText = '00';
+                document.getElementById('hours').innerText = '00';
+                document.getElementById('minutes').innerText = '00';
+                document.getElementById('seconds').innerText = '00';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Pomodoro Timer
+        let timerInterval;
+        let timerTimeLeft = 25 * 60;
+        let timerRunning = false;
+        let pomodoroDuration = 25;
+
+        const timerDisplay = document.getElementById('timer-display');
+        const timerStatus = document.getElementById('timer-status');
+        const startTimerBtn = document.getElementById('start-timer');
+        const pauseTimerBtn = document.getElementById('pause-timer');
+        const resetTimerBtn = document.getElementById('reset-timer');
+        const pomodoroBtns = document.querySelectorAll('.pomodoro-btn');
+        const progressRing = document.querySelector('.progress-ring');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerTimeLeft / 60);
+            const seconds = timerTimeLeft % 60;
+            timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const circumference = 2 * Math.PI * 40;
+            const totalTime = pomodoroDuration * 60;
+            const offset = circumference - (timerTimeLeft / totalTime) * circumference;
+            progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+            progressRing.style.strokeDashoffset = offset;
+        }
+
+        function startTimer() {
+            if (timerRunning) return;
+            
+            timerRunning = true;
+            timerStatus.innerText = 'Focusing...';
+            
+            timerInterval = setInterval(() => {
+                if (timerTimeLeft > 0) {
+                    timerTimeLeft--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    timerStatus.innerText = 'Time is up!';
+                    const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+                    audio.play();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerStatus.innerText = 'Paused';
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerTimeLeft = pomodoroDuration * 60;
+            timerStatus.innerText = 'Ready to focus';
+            updateTimerDisplay();
+        }
+
+        pomodoroBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                pomodoroDuration = parseInt(btn.getAttribute('data-minutes'));
+                timerTimeLeft = pomodoroDuration * 60;
+                updateTimerDisplay();
+                resetTimer();
+            });
+        });
+
+        startTimerBtn.addEventListener('click', startTimer);
+        pauseTimerBtn.addEventListener('click', pauseTimer);
+        resetTimerBtn.addEventListener('click', resetTimer);
+
+        updateTimerDisplay();
+
+        // Weekly Tests
+        let tests = [
+            { id: 1, completed: false },
+            { id: 2, completed: false },
+            { id: 3, completed: false }
+        ];
+
+        const testCheckboxes = document.querySelectorAll('.test-checkbox');
+        
+        function updateTestsProgress() {
+            const completedTests = tests.filter(test => test.completed).length;
+            document.getElementById('tests-completed').innerText = completedTests;
+            document.getElementById('weekly-progress').style.width = `${(completedTests / 3) * 100}%`;
+            
+            testCheckboxes.forEach((checkbox, index) => {
+                if (tests[index].completed) {
+                    checkbox.checked = true;
+                    checkbox.nextElementSibling.classList.add('bg-secondary');
+                    checkbox.nextElementSibling.querySelector('i').classList.remove('hidden');
+                } else {
+                    checkbox.checked = false;
+                    checkbox.nextElementSibling.classList.remove('bg-secondary');
+                    checkbox.nextElementSibling.querySelector('i').classList.add('hidden');
+                }
+            });
+        }
+
+        testCheckboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener('change', () => {
+                tests[index].completed = checkbox.checked;
+                updateTestsProgress();
+            });
+        });
+
+        // Initialize chapters and render
+        function initApp() {
+            loadChapters();
+            loadTodos();
+            renderChapters(chapters);
+            setupEventListeners();
+            updateTestsProgress();
+            renderCalendar();
+            renderTodos();
+        }
+
+        function renderChapters(chaptersToRender) {
+            const pendingContainer = document.getElementById('pending-chapters');
+            const moderateContainer = document.getElementById('moderate-chapters');
+            const completedContainer = document.getElementById('completed-chapters');
+            
+            pendingContainer.innerHTML = '';
+            moderateContainer.innerHTML = '';
+            completedContainer.innerHTML = '';
+            
+            let pendingCount = 0;
+            let moderateCount = 0;
+            let completedCount = 0;
+            
+            let physicsCompleted = 0;
+            let chemistryCompleted = 0;
+            let mathsCompleted = 0;
+            
+            chaptersToRender.forEach(chapter => {
+                const chapterEl = createChapterElement(chapter);
+                
+                if (chapter.status === 'pending') {
+                    pendingContainer.appendChild(chapterEl);
+                    pendingCount++;
+                } else if (chapter.status === 'moderate') {
+                    moderateContainer.appendChild(chapterEl);
+                    moderateCount++;
+                } else if (chapter.status === 'completed') {
+                    completedContainer.appendChild(chapterEl);
+                    completedCount++;
+                    if (chapter.subject === 'physics') physicsCompleted++;
+                    if (chapter.subject === 'chemistry') chemistryCompleted++;
+                    if (chapter.subject === 'maths') mathsCompleted++;
+                }
+            });
+            
+            document.getElementById('pending-count').textContent = pendingCount;
+            document.getElementById('moderate-count').textContent = moderateCount;
+            document.getElementById('completed-count').textContent = completedCount;
+            
+            updateProgressBars(chaptersToRender, physicsCompleted, chemistryCompleted, mathsCompleted);
+        }
+
+        function createChapterElement(chapter) {
+            const div = document.createElement('div');
+            div.className = `chapter-item bg-dark/50 p-4 rounded-lg subject-${chapter.subject}`;
+            div.dataset.id = chapter.id;
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-medium text-sm">${chapter.name}</h3>
+                    <span class="text-xs px-2 py-1 rounded-full ${getSubjectBadgeClass(chapter.subject)}">
+                        ${chapter.subject.charAt(0).toUpperCase() + chapter.subject.slice(1)}
+                    </span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="flex items-center">
+                        <label class="container flex items-center cursor-pointer">
+                            <input type="checkbox" ${chapter.pyq ? 'checked' : ''} class="pyq-checkbox custom-checkbox hidden">
+                            <span class="checkmark w-5 h-5 bg-dark border border-gray-600 rounded inline-block relative mr-2"></span>
+                            <span class="text-xs">PYQ</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="container flex items-center cursor-pointer">
+                            <input type="checkbox" ${chapter.concept ? 'checked' : ''} class="concept-checkbox custom-checkbox hidden">
+                            <span class="checkmark w-5 h-5 bg-dark border border-gray-600 rounded inline-block relative mr-2"></span>
+                            <span class="text-xs">Concept</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="container flex items-center cursor-pointer">
+                            <input type="checkbox" ${chapter.revision ? 'checked' : ''} class="revision-checkbox custom-checkbox hidden">
+                            <span class="checkmark w-5 h-5 bg-dark border border-gray-600 rounded inline-block relative mr-2"></span>
+                            <span class="text-xs">Revision</span>
+                        </label>
+                    </div>
+                </div>
+            `;
+            
+            div.querySelector('.pyq-checkbox').addEventListener('change', () => {
+                toggleChapterProperty(chapter.id, 'pyq');
+            });
+            
+            div.querySelector('.concept-checkbox').addEventListener('change', () => {
+                toggleChapterProperty(chapter.id, 'concept');
+            });
+            
+            div.querySelector('.revision-checkbox').addEventListener('change', () => {
+                toggleChapterProperty(chapter.id, 'revision');
+            });
+            
+            return div;
+        }
+
+        function getSubjectBadgeClass(subject) {
+            switch(subject) {
+                case 'physics': return 'bg-red-500/20 text-red-400';
+                case 'chemistry': return 'bg-green-500/20 text-green-400';
+                case 'maths': return 'bg-blue-500/20 text-blue-400';
+                default: return 'bg-gray-500/20 text-gray-400';
+            }
+        }
+
+        function toggleChapterProperty(id, property) {
+            const chapterIndex = chapters.findIndex(c => c.id === id);
+            if (chapterIndex !== -1) {
+                chapters[chapterIndex][property] = !chapters[chapterIndex][property];
+                
+                if (chapters[chapterIndex].pyq && chapters[chapterIndex].concept && chapters[chapterIndex].revision) {
+                    chapters[chapterIndex].status = 'completed';
+                } else if (chapters[chapterIndex].pyq && chapters[chapterIndex].concept) {
+                    chapters[chapterIndex].status = 'moderate';
+                } else {
+                    chapters[chapterIndex].status = 'pending';
+                }
+                
+                saveChapters();
+                const activeTab = document.querySelector('.tab-btn.text-primary');
+                const subject = activeTab ? activeTab.dataset.subject : 'all';
+                filterChaptersBySubject(subject);
+            }
+        }
+
+        function updateProgressBars(chaptersToRender, physicsCompleted, chemistryCompleted, mathsCompleted) {
+            const totalChapters = chapters.length;
+            const completedChapters = chaptersToRender.filter(c => c.status === 'completed').length;
+            const progressPercent = Math.round((completedChapters / totalChapters) * 100);
+            
+            document.getElementById('progress-percent').textContent = `${progressPercent}%`;
+            const progressRing = document.querySelector('.progress-ring');
+            const circumference = 2 * Math.PI * 15.9155;
+            const offset = circumference - (progressPercent / 100) * circumference;
+            progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+            progressRing.style.strokeDashoffset = offset;
+            
+            const physicsTotal = chapters.filter(c => c.subject === 'physics').length;
+            const chemistryTotal = chapters.filter(c => c.subject === 'chemistry').length;
+            const mathsTotal = chapters.filter(c => c.subject === 'maths').length;
+            
+            const physicsPercent = physicsTotal > 0 ? Math.round((physicsCompleted / physicsTotal) * 100) : 0;
+            const chemistryPercent = chemistryTotal > 0 ? Math.round((chemistryCompleted / chemistryTotal) * 100) : 0;
+            const mathsPercent = mathsTotal > 0 ? Math.round((mathsCompleted / mathsTotal) * 100) : 0;
+            
+            document.getElementById('physics-progress').textContent = `${physicsPercent}%`;
+            document.getElementById('chemistry-progress').textContent = `${chemistryPercent}%`;
+            document.getElementById('maths-progress').textContent = `${mathsPercent}%`;
+            
+            document.querySelector('#physics-progress').closest('.mb-4').querySelector('.bg-red-500').style.width = `${physicsPercent}%`;
+            document.querySelector('#chemistry-progress').closest('.mb-4').querySelector('.bg-green-500').style.width = `${chemistryPercent}%`;
+            document.querySelector('#maths-progress').closest('.mb-4').querySelector('.bg-blue-500').style.width = `${mathsPercent}%`;
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(t => {
+                        t.classList.remove('text-primary', 'border-primary');
+                        t.classList.add('text-gray-400');
+                    });
+                    
+                    btn.classList.add('text-primary', 'border-primary');
+                    btn.classList.remove('text-gray-400');
+                    
+                    const subject = btn.dataset.subject;
+                    filterChaptersBySubject(subject);
+                });
+            });
+        }
+
+        function filterChaptersBySubject(subject) {
+            const filteredChapters = subject === 'all' ? chapters : chapters.filter(c => c.subject === subject);
+            renderChapters(filteredChapters);
+        }
+
+        // Calendar Section
+        const prevMonthBtn = document.getElementById('prev-month');
+        const nextMonthBtn = document.getElementById('next-month');
+        const monthYear = document.getElementById('month-year');
+        const calendarDays = document.getElementById('calendar-days');
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        const jeeMainsDate = new Date('January 20, 2026');
+        const jeeAdvancedDate = new Date('May 15, 2026');
+
+        function renderCalendar() {
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            calendarDays.innerHTML = '';
+
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                const currentDay = new Date(currentYear, currentMonth, day);
+                if (currentDay.getDate() === currentDate.getDate() && currentDay.getMonth() === currentDate.getMonth() && currentDay.getFullYear() === currentDate.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+                if (currentDay.getDate() === jeeMainsDate.getDate() && currentDay.getMonth() === jeeMainsDate.getMonth() && currentDay.getFullYear() === jeeMainsDate.getFullYear()) {
+                    dayElement.classList.add('event-mains');
+                    dayElement.title = 'JEE Mains 2026';
+                }
+                if (currentDay.getDate() === jeeAdvancedDate.getDate() && currentDay.getMonth() === jeeAdvancedDate.getMonth() && currentDay.getFullYear() === jeeAdvancedDate.getFullYear()) {
+                    dayElement.classList.add('event-advanced');
+                    dayElement.title = 'JEE Advanced 2026';
+                }
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        // Study Schedule Planner
+        const addTodoBtn = document.getElementById('add-todo');
+        const suggestScheduleBtn = document.getElementById('suggest-schedule');
+        const todoList = document.getElementById('todo-list');
+
+        function renderTodos() {
+            todoList.innerHTML = '';
+            todos.forEach(todo => {
+                const div = document.createElement('div');
+                div.className = `todo-item bg-dark/50 p-3 rounded-lg flex justify-between items-center subject-${todo.subject} ${todo.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-medium">${todo.task}</h4>
+                        <p class="text-xs text-gray-400">${todo.day} • ${todo.subject} • ${todo.duration} hrs</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="toggle-todo text-primary hover:underline text-xs" data-id="${todo.id}">Toggle</button>
+                        <button class="delete-todo text-red-400 hover:underline text-xs" data-id="${todo.id}">Delete</button>
+                    </div>
+                `;
+                todoList.appendChild(div);
+            });
+
+            document.querySelectorAll('.toggle-todo').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const todo = todos.find(t => t.id === id);
+                    if (todo) {
+                        todo.completed = !todo.completed;
+                        saveTodos();
+                        renderTodos();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-todo').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    todos = todos.filter(t => t.id !== id);
+                    saveTodos();
+                    renderTodos();
+                });
+            });
+        }
+
+        addTodoBtn.addEventListener('click', () => {
+            const task = prompt('Enter task (e.g., Study Electrostatics):');
+            const day = prompt('Enter day (e.g., Monday):');
+            const subject = prompt('Enter subject (Physics, Chemistry, Maths):').toLowerCase();
+            const duration = prompt('Enter duration in hours (e.g., 2):');
+            if (task && day && subject && duration && ['physics', 'chemistry', 'maths'].includes(subject)) {
+                todos.push({
+                    id: `todo-${Date.now()}`,
+                    task,
+                    day,
+                    subject,
+                    duration: parseFloat(duration),
+                    completed: false
+                });
+                saveTodos();
+                renderTodos();
+            } else {
+                alert('Please provide valid task details.');
+            }
+        });
+
+        suggestScheduleBtn.addEventListener('click', () => {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const subjects = ['physics', 'chemistry', 'maths'];
+            todos = [];
+            days.forEach(day => {
+                subjects.forEach(subject => {
+                    const pendingChapters = chapters.filter(c => c.subject === subject && c.status !== 'completed');
+                    if (pendingChapters.length > 0) {
+                        const chapter = pendingChapters[Math.floor(Math.random() * pendingChapters.length)];
+                        todos.push({
+                            id: `todo-${Date.now()}-${day}-${subject}`,
+                            task: `Study ${chapter.name}`,
+                            day,
+                            subject,
+                            duration: 2,
+                            completed: false
+                        });
+                    }
+                });
+            });
+            saveTodos();
+            renderTodos();
+        });
+
+       
+
+       
+
+
+       
+       
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
+    </script>
+</body>
+</html>
